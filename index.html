@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KrtlMusic - Official Player</title>
+    <title>KrtlMusic - Canlı Yükleme Paneli</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -23,9 +23,9 @@
             overflow: hidden;
         }
 
-        /* Sol Menü (Çoklu Şarkı Listesi) */
+        /* Sol Menü */
         .sidebar {
-            width: 280px;
+            width: 300px;
             background-color: var(--panel-bg);
             border-right: 1px solid var(--border-color);
             display: flex;
@@ -40,6 +40,43 @@
             margin-top: 0;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 10px;
+        }
+
+        /* Dosya Seçme Butonu */
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            border: 2px dashed var(--accent-color);
+            color: var(--accent-color);
+            background-color: transparent;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .upload-btn:hover {
+            background: rgba(88, 166, 255, 0.1);
+            box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
+        }
+
+        .upload-btn-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
         }
 
         .playlist {
@@ -70,7 +107,7 @@
             color: var(--accent-color);
         }
 
-        /* Ana Kontrol Paneli */
+        /* Ana Panel */
         .main-panel {
             flex-grow: 1;
             display: flex;
@@ -78,7 +115,6 @@
             align-items: center;
             justify-content: center;
             padding: 40px;
-            position: relative;
         }
 
         .player-card {
@@ -110,9 +146,9 @@
             color: var(--accent-color);
             margin-bottom: 20px;
             font-size: 1.1rem;
+            min-height: 24px;
         }
 
-        /* Butonlar */
         .controls {
             display: flex;
             justify-content: center;
@@ -138,7 +174,6 @@
             box-shadow: 0 0 15px rgba(88, 166, 255, 0.4);
         }
 
-        /* Efekt Modları */
         .fx-panel {
             background: #0d1117;
             border: 1px solid var(--border-color);
@@ -170,23 +205,20 @@
             text-align: center;
             box-shadow: 0 0 10px rgba(35, 134, 54, 0.4);
         }
-
-        .fx-badge.off {
-            background: #21262d;
-            color: #8b949e;
-            box-shadow: none;
-        }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <h2>KrtlMusic List</h2>
+        
+        <div class="upload-btn-wrapper">
+            <button class="upload-btn">➕ Şarkı Ekle (.mp3)</button>
+            <input type="file" id="audio-upload" accept="audio/*" multiple />
+        </div>
+
         <ul class="playlist" id="playlist">
-            <li class="active" data-src="ses.mp3">Varsayılan Şarkı (ses.mp3)</li>
-            <li data-src="ses2.mp3">KrtlTech Bass Remix (ses2.mp3)</li>
-            <li data-src="ses3.mp3">Roblox Doors Theme (ses3.mp3)</li>
-        </ul>
+            </ul>
     </div>
 
     <div class="main-panel">
@@ -194,7 +226,7 @@
             <h1>KRTLMUSIC</h1>
             <div class="sub">BY KRTLTECH</div>
 
-            <div class="now-playing" id="track-title">Varsayılan Şarkı (ses.mp3)</div>
+            <div class="now-playing" id="track-title">Lütfen sol menüden şarkı yükle kanka</div>
 
             <div class="controls">
                 <button class="btn" onclick="playMusic()">Oynat</button>
@@ -204,18 +236,16 @@
             <div class="fx-panel">
                 <div class="fx-title">Aktif Ses Efektleri</div>
                 <div class="fx-grid">
-                    <div class="fx-badge" id="fx-8d">8D SOUND</div>
-                    <div class="fx-badge" id="fx-reverb">REVERB</div>
-                    <div class="fx-badge" id="fx-bass">MEGA BASS</div>
+                    <div class="fx-badge">8D SOUND</div>
+                    <div class="fx-badge">REVERB</div>
+                    <div class="fx-badge">MEGA BASS</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Gizli Ses Elementi ve Web Audio API Kurulumu
         const audio = new Audio();
-        audio.src = 'ses.mp3';
         audio.loop = true;
 
         let audioCtx = null;
@@ -223,28 +253,28 @@
         let panner = null;
         let bassFilter = null;
         let reverbNode = null;
+        let loadedTracks = []; // Yüklenen şarkıların listesi
 
-        // Web Audio API'yi başlatma fonksiyonu (Tarayıcı engeline takılmamak için ilk oynatmada kurulur)
+        // Web Audio API DJ Motoru
         function initAudioEngine() {
             if (audioCtx) return;
 
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             source = audioCtx.createMediaElementSource(audio);
 
-            // 1. BASS BOOST AYARI (Lowpass / Peaking Filter)
+            // 1. MEGA BASS (+15dB)
             bassFilter = audioCtx.createBiquadFilter();
             bassFilter.type = 'lowshelf';
             bassFilter.frequency.setValueAtTime(150, audioCtx.currentTime); 
-            bassFilter.gain.setValueAtTime(15, audioCtx.currentTime); // +15dB Güçlü Bass!
+            bassFilter.gain.setValueAtTime(15, audioCtx.currentTime); 
 
-            // 2. REVERB EFFECT (Yankı Odası Simülasyonu)
+            // 2. REVERB
             reverbNode = audioCtx.createConvolver();
             createReverbImpulse();
 
-            // 3. 8D SOUND AYARI (Stereo Panner Node)
+            // 3. 8D PANNER
             panner = audioCtx.createStereoPanner ? audioCtx.createStereoPanner() : null;
 
-            // Bağlantıları yapalım: Şarkı -> Bass -> Reverb -> 8D Panner -> Hoparlör
             let lastNode = source;
             lastNode = lastNode.connect(bassFilter);
             lastNode = lastNode.connect(reverbNode);
@@ -252,20 +282,18 @@
             if (panner) {
                 lastNode = lastNode.connect(panner);
                 lastNode.connect(audioCtx.destination);
-                start8DEffect(); // 8D Dönüşünü başlat
+                start8DEffect();
             } else {
                 lastNode.connect(audioCtx.destination);
             }
         }
 
-        // Suni Reverb (Yankı) Dalgası Üretici
         function createReverbImpulse() {
             const rate = 44100;
-            const len = rate * 2.5; // 2.5 saniyelik yankı odası genişliği
+            const len = rate * 2.5; 
             const impulse = new AudioContext().createBuffer(2, len, rate);
             const left = impulse.getChannelData(0);
             const right = impulse.getChannelData(1);
-            
             for (let i = 0; i < len; i++) {
                 const decay = Math.exp(-i / (rate * 1.5));
                 left[i] = (Math.random() * 2 - 1) * decay;
@@ -274,21 +302,19 @@
             reverbNode.buffer = impulse;
         }
 
-        // 8D Ses Simülasyonu (Sesi sürekli sol kulaklıktan sağ kulaklığa döndürür)
         let angle = 0;
         function start8DEffect() {
             setInterval(() => {
                 if (panner && audioCtx && !audio.paused) {
-                    // Sinüs dalgası ile sesi sürekli -1 (tam sol) ile +1 (tam sağ) arasında gezdiriyoruz
                     const panValue = Math.sin(angle);
                     panner.pan.setValueAtTime(panValue, audioCtx.currentTime);
-                    angle += 0.03; // Dönüş hızı
+                    angle += 0.03; 
                 }
             }, 30);
         }
 
-        // Oynat ve Durdur Mekanizmaları
         function playMusic() {
+            if(!audio.src) return;
             initAudioEngine();
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
@@ -300,28 +326,63 @@
             audio.pause();
         }
 
-        // Sol Menüden Çoklu Şarkı Seçimi
-        const playlistItems = document.querySelectorAll('#playlist li');
+        // KULLANICININ KENDİ DOSYASINI YÜKLEME MEKANİZMASI
+        const fileInput = document.getElementById('audio-upload');
+        const playlistUI = document.getElementById('playlist');
         const trackTitle = document.getElementById('track-title');
 
-        playlistItems.forEach(item => {
-            item.addEventListener('click', () => {
-                // Aktif sınıfını güncelle
-                playlistItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
+        fileInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                // Dosyayı tarayıcının çalabileceği geçici bir linke dönüştür
+                const fileURL = URL.createObjectURL(file);
+                
+                const trackData = {
+                    name: file.name,
+                    url: fileURL
+                };
+                
+                loadedTracks.push(trackData);
+                
+                // Sol listeye yeni şarkıyı ekle kanka
+                const li = document.createElement('li');
+                li.innerText = file.name;
+                li.setAttribute('data-index', loadedTracks.length - 1);
+                
+                li.addEventListener('click', function() {
+                    document.querySelectorAll('#playlist li').forEach(el => el.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const index = this.getAttribute('data-index');
+                    selectTrack(index);
+                });
+                
+                playlistUI.appendChild(li);
 
-                // Şarkıyı ve başlığı değiştir
-                const newSrc = item.getAttribute('data-src');
-                trackTitle.innerText = item.innerText;
-                
-                const wasPlaying = !audio.paused;
-                audio.src = newSrc;
-                
-                if (wasPlaying) {
-                    audio.play();
+                // Eğer ilk şarkıysa otomatik olarak seç
+                if (loadedTracks.length === 1) {
+                    li.classList.add('active');
+                    selectTrack(0);
                 }
-            });
+            }
         });
+
+        function selectTrack(index) {
+            const track = loadedTracks[index];
+            trackTitle.innerText = track.name;
+            
+            const wasPlaying = !audio.paused;
+            audio.src = track.url;
+            
+            if (wasPlaying) {
+                audio.play();
+            } else {
+                // İlk yüklemede otomatik oynatmayı tetiklemek istersen burayı açabilirsin kanka
+                playMusic();
+            }
+        }
     </script>
 
 </body>
