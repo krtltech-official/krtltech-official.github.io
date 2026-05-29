@@ -1,389 +1,292 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KrtlMusic - Canlı Yükleme Paneli</title>
-    <style>
-        :root {
-            --bg-color: #0d1117;
-            --panel-bg: #161b22;
-            --accent-color: #58a6ff;
-            --border-color: #30363d;
-            --text-color: #ffffff;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KrtlMusic</title>
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
+}
 
-        /* Sol Menü */
-        .sidebar {
-            width: 300px;
-            background-color: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+body{
+    background:#111;
+    color:white;
+    display:flex;
+    height:100vh;
+    overflow:hidden;
+}
 
-        .sidebar h2 {
-            color: var(--accent-color);
-            font-size: 1.4rem;
-            margin-top: 0;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-        }
+/* SOL MENÜ */
+.sidebar{
+    width:250px;
+    background:#1b1b1b;
+    padding:15px;
+    border-right:2px solid #333;
+    overflow-y:auto;
+}
 
-        /* Dosya Seçme Butonu */
-        .upload-btn-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
+.sidebar h2{
+    margin-bottom:15px;
+    text-align:center;
+    color:#00ff99;
+}
 
-        .upload-btn {
-            border: 2px dashed var(--accent-color);
-            color: var(--accent-color);
-            background-color: transparent;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: center;
-            box-sizing: border-box;
-        }
+.music-item{
+    background:#2a2a2a;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:0.2s;
+}
 
-        .upload-btn:hover {
-            background: rgba(88, 166, 255, 0.1);
-            box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
-        }
+.music-item:hover{
+    background:#00ff99;
+    color:black;
+}
 
-        .upload-btn-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
+/* ANA PLAYER */
+.main{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
 
-        .playlist {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
+.player{
+    width:400px;
+    background:#1e1e1e;
+    padding:25px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 0 20px rgba(0,255,153,0.3);
+}
 
-        .playlist li {
-            padding: 12px;
-            background: #21262d;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: 0.2s;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+.player h1{
+    margin-bottom:20px;
+    color:#00ff99;
+}
 
-        .playlist li:hover, .playlist li.active {
-            border-color: var(--accent-color);
-            background: #30363d;
-            color: var(--accent-color);
-        }
+button{
+    background:#00ff99;
+    color:black;
+    border:none;
+    padding:12px 20px;
+    margin:10px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.2s;
+}
 
-        /* Ana Panel */
-        .main-panel {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
+button:hover{
+    transform:scale(1.05);
+}
 
-        .player-card {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            width: 100%;
-            max-width: 450px;
-        }
+input[type=file]{
+    margin-top:15px;
+    color:white;
+}
 
-        .player-card h1 {
-            font-size: 2.2rem;
-            margin: 0 0 5px 0;
-            letter-spacing: 2px;
-            color: var(--text-color);
-        }
-
-        .player-card .sub {
-            color: #8b949e;
-            font-size: 0.9rem;
-            margin-bottom: 30px;
-        }
-
-        .now-playing {
-            font-weight: bold;
-            color: var(--accent-color);
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            min-height: 24px;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 35px;
-        }
-
-        .btn {
-            background: #21262d;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 12px 24px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-
-        .btn:hover {
-            background: var(--accent-color);
-            color: #000;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 15px rgba(88, 166, 255, 0.4);
-        }
-
-        .fx-panel {
-            background: #0d1117;
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        .fx-title {
-            font-size: 0.9rem;
-            color: #8b949e;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .fx-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .fx-badge {
-            background: #238636;
-            color: white;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(35, 134, 54, 0.4);
-        }
-    </style>
+.status{
+    margin-top:15px;
+    color:#aaa;
+}
+</style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2>KrtlMusic List</h2>
-        
-        <div class="upload-btn-wrapper">
-            <button class="upload-btn">➕ Şarkı Ekle (.mp3)</button>
-            <input type="file" id="audio-upload" accept="audio/*" multiple />
+<!-- SOL MENÜ -->
+<div class="sidebar">
+    <h2>KrtlMusic</h2>
+
+    <div id="musicList"></div>
+
+    <input type="file" id="upload" multiple accept=".mp3">
+</div>
+
+<!-- PLAYER -->
+<div class="main">
+    <div class="player">
+
+        <h1 id="songName">Müzik Seçilmedi</h1>
+
+        <button onclick="playMusic()">▶ Oynat</button>
+        <button onclick="pauseMusic()">⏸ Duraklat</button>
+
+        <br>
+
+        <button id="effectBtn" onclick="toggleEffects()">
+            Reverb OFF
+        </button>
+
+        <div class="status" id="status">
+            Efektler Kapalı
         </div>
 
-        <ul class="playlist" id="playlist">
-            </ul>
     </div>
+</div>
 
-    <div class="main-panel">
-        <div class="player-card">
-            <h1>KRTLMUSIC</h1>
-            <div class="sub">BY KRTLTECH</div>
+<script>
+let audio = new Audio();
+let currentFile = null;
 
-            <div class="now-playing" id="track-title">Lütfen sol menüden şarkı yükle kanka</div>
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioContext = new AudioContext();
 
-            <div class="controls">
-                <button class="btn" onclick="playMusic()">Oynat</button>
-                <button class="btn" onclick="pauseMusic()">Durdur</button>
-            </div>
+let source = null;
 
-            <div class="fx-panel">
-                <div class="fx-title">Aktif Ses Efektleri</div>
-                <div class="fx-grid">
-                    <div class="fx-badge">8D SOUND</div>
-                    <div class="fx-badge">REVERB</div>
-                    <div class="fx-badge">MEGA BASS</div>
-                </div>
-            </div>
-        </div>
-    </div>
+let effectsEnabled = false;
 
-    <script>
-        const audio = new Audio();
-        audio.loop = true;
+/* EFEKTLER */
+const bassBoost = audioContext.createBiquadFilter();
+bassBoost.type = "lowshelf";
+bassBoost.frequency.value = 200;
+bassBoost.gain.value = 15;
 
-        let audioCtx = null;
-        let source = null;
-        let panner = null;
-        let bassFilter = null;
-        let reverbNode = null;
-        let loadedTracks = []; // Yüklenen şarkıların listesi
+const delayNode = audioContext.createDelay();
+delayNode.delayTime.value = 0.25;
 
-        // Web Audio API DJ Motoru
-        function initAudioEngine() {
-            if (audioCtx) return;
+const feedback = audioContext.createGain();
+feedback.gain.value = 0.4;
 
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            source = audioCtx.createMediaElementSource(audio);
+delayNode.connect(feedback);
+feedback.connect(delayNode);
 
-            // 1. MEGA BASS (+15dB)
-            bassFilter = audioCtx.createBiquadFilter();
-            bassFilter.type = 'lowshelf';
-            bassFilter.frequency.setValueAtTime(150, audioCtx.currentTime); 
-            bassFilter.gain.setValueAtTime(15, audioCtx.currentTime); 
+const panner = audioContext.createStereoPanner();
 
-            // 2. REVERB
-            reverbNode = audioCtx.createConvolver();
-            createReverbImpulse();
+let panValue = -1;
+let panInterval;
 
-            // 3. 8D PANNER
-            panner = audioCtx.createStereoPanner ? audioCtx.createStereoPanner() : null;
+/* MÜZİK YÜKLE */
+document.getElementById("upload").addEventListener("change", (e) => {
 
-            let lastNode = source;
-            lastNode = lastNode.connect(bassFilter);
-            lastNode = lastNode.connect(reverbNode);
-            
-            if (panner) {
-                lastNode = lastNode.connect(panner);
-                lastNode.connect(audioCtx.destination);
-                start8DEffect();
-            } else {
-                lastNode.connect(audioCtx.destination);
-            }
-        }
+    const files = e.target.files;
 
-        function createReverbImpulse() {
-            const rate = 44100;
-            const len = rate * 2.5; 
-            const impulse = new AudioContext().createBuffer(2, len, rate);
-            const left = impulse.getChannelData(0);
-            const right = impulse.getChannelData(1);
-            for (let i = 0; i < len; i++) {
-                const decay = Math.exp(-i / (rate * 1.5));
-                left[i] = (Math.random() * 2 - 1) * decay;
-                right[i] = (Math.random() * 2 - 1) * decay;
-            }
-            reverbNode.buffer = impulse;
-        }
+    for(let file of files){
 
-        let angle = 0;
-        function start8DEffect() {
-            setInterval(() => {
-                if (panner && audioCtx && !audio.paused) {
-                    const panValue = Math.sin(angle);
-                    panner.pan.setValueAtTime(panValue, audioCtx.currentTime);
-                    angle += 0.03; 
-                }
-            }, 30);
-        }
+        const div = document.createElement("div");
+        div.className = "music-item";
+        div.innerText = file.name;
 
-        function playMusic() {
-            if(!audio.src) return;
-            initAudioEngine();
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            audio.play();
-        }
+        div.onclick = () => {
+            loadMusic(file);
+        };
 
-        function pauseMusic() {
-            audio.pause();
-        }
+        document.getElementById("musicList").appendChild(div);
+    }
 
-        // KULLANICININ KENDİ DOSYASINI YÜKLEME MEKANİZMASI
-        const fileInput = document.getElementById('audio-upload');
-        const playlistUI = document.getElementById('playlist');
-        const trackTitle = document.getElementById('track-title');
+});
 
-        fileInput.addEventListener('change', (e) => {
-            const files = e.target.files;
-            
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                // Dosyayı tarayıcının çalabileceği geçici bir linke dönüştür
-                const fileURL = URL.createObjectURL(file);
-                
-                const trackData = {
-                    name: file.name,
-                    url: fileURL
-                };
-                
-                loadedTracks.push(trackData);
-                
-                // Sol listeye yeni şarkıyı ekle kanka
-                const li = document.createElement('li');
-                li.innerText = file.name;
-                li.setAttribute('data-index', loadedTracks.length - 1);
-                
-                li.addEventListener('click', function() {
-                    document.querySelectorAll('#playlist li').forEach(el => el.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const index = this.getAttribute('data-index');
-                    selectTrack(index);
-                });
-                
-                playlistUI.appendChild(li);
+/* MÜZİK YÜKLEME */
+function loadMusic(file){
 
-                // Eğer ilk şarkıysa otomatik olarak seç
-                if (loadedTracks.length === 1) {
-                    li.classList.add('active');
-                    selectTrack(0);
-                }
-            }
-        });
+    currentFile = file;
 
-        function selectTrack(index) {
-            const track = loadedTracks[index];
-            trackTitle.innerText = track.name;
-            
-            const wasPlaying = !audio.paused;
-            audio.src = track.url;
-            
-            if (wasPlaying) {
-                audio.play();
-            } else {
-                // İlk yüklemede otomatik oynatmayı tetiklemek istersen burayı açabilirsin kanka
-                playMusic();
-            }
-        }
-    </script>
+    const url = URL.createObjectURL(file);
+
+    audio.src = url;
+
+    document.getElementById("songName").innerText = file.name;
+
+    setupAudio();
+}
+
+/* SES SİSTEMİ */
+function setupAudio(){
+
+    if(source){
+        source.disconnect();
+    }
+
+    source = audioContext.createMediaElementSource(audio);
+
+    if(effectsEnabled){
+
+        source.connect(bassBoost);
+
+        bassBoost.connect(panner);
+
+        panner.connect(delayNode);
+
+        delayNode.connect(audioContext.destination);
+
+    }else{
+
+        source.connect(audioContext.destination);
+
+    }
+}
+
+/* PLAY */
+function playMusic(){
+
+    audioContext.resume();
+    audio.play();
+
+}
+
+/* PAUSE */
+function pauseMusic(){
+
+    audio.pause();
+
+}
+
+/* EFEKT */
+function toggleEffects(){
+
+    effectsEnabled = !effectsEnabled;
+
+    setupAudio();
+
+    const btn = document.getElementById("effectBtn");
+    const status = document.getElementById("status");
+
+    if(effectsEnabled){
+
+        btn.innerText = "Reverb ON";
+        status.innerText = "8D + Bass + Reverb + Yankı Açık";
+
+        start8D();
+
+    }else{
+
+        btn.innerText = "Reverb OFF";
+        status.innerText = "Efektler Kapalı";
+
+        stop8D();
+
+    }
+
+}
+
+/* 8D */
+function start8D(){
+
+    clearInterval(panInterval);
+
+    panInterval = setInterval(() => {
+
+        panner.pan.value = Math.sin(Date.now()/500);
+
+    }, 20);
+
+}
+
+function stop8D(){
+
+    clearInterval(panInterval);
+
+    panner.pan.value = 0;
+
+}
+</script>
 
 </body>
 </html>
