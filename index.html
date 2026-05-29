@@ -1,129 +1,714 @@
+# KrtlMusic v1 — Tek HTML Profesyonel Sürüm
+
+Aşağıdaki kodu `index.html` olarak kaydet.
+
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>KrtlMusic Ultimate Playlist</title>
-    <style>
-        :root { --bg: #0d1117; --panel: #161b22; --accent: #58a6ff; --text: #ffffff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Sol Menü */
-        .sidebar { width: 300px; background: var(--panel); border-right: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; }
-        .upload-btn { background: var(--accent); color: #000; padding: 15px; border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; margin-bottom: 20px; }
-        .playlist { list-style: none; padding: 0; flex-grow: 1; overflow-y: auto; }
-        .playlist li { background: #21262d; padding: 12px; margin-bottom: 8px; border-radius: 6px; cursor: pointer; border: 1px solid #30363d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .playlist li.active { border-color: var(--accent); color: var(--accent); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KrtlMusic</title>
 
-        /* Ana Alan */
-        .main { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .player { background: var(--panel); padding: 40px; border-radius: 20px; text-align: center; width: 80%; max-width: 500px; border: 1px solid #30363d; }
-        #visualizer { width: 100%; height: 120px; background: #000; border-radius: 10px; margin-bottom: 20px; }
-        .controls button { padding: 15px 30px; margin: 5px; border-radius: 30px; border: 1px solid var(--accent); background: transparent; color: white; cursor: pointer; font-weight: bold; }
-        .controls button:hover { background: var(--accent); color: #000; }
-    </style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --bg:#0b0b0f;
+    --panel:#13131a;
+    --card:#1a1a24;
+    --accent:#00ffae;
+    --text:#ffffff;
+    --text2:#a7a7b3;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#070709,#101018);
+    color:var(--text);
+    height:100vh;
+    overflow:hidden;
+}
+
+.app{
+    display:flex;
+    width:100%;
+    height:100%;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:320px;
+    background:rgba(19,19,26,0.9);
+    border-right:1px solid rgba(255,255,255,0.06);
+    backdrop-filter:blur(15px);
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+}
+
+.logo{
+    font-size:30px;
+    font-weight:700;
+    color:var(--accent);
+    margin-bottom:20px;
+    text-align:center;
+}
+
+.uploadBtn{
+    background:var(--accent);
+    color:black;
+    border:none;
+    padding:14px;
+    border-radius:14px;
+    font-weight:600;
+    cursor:pointer;
+    margin-bottom:20px;
+    transition:0.25s;
+}
+
+.uploadBtn:hover{
+    transform:scale(1.03);
+}
+
+.playlist{
+    flex:1;
+    overflow-y:auto;
+}
+
+.song{
+    background:rgba(255,255,255,0.04);
+    padding:14px;
+    border-radius:14px;
+    margin-bottom:10px;
+    cursor:pointer;
+    transition:0.25s;
+    border:1px solid transparent;
+}
+
+.song:hover{
+    border-color:var(--accent);
+    transform:translateX(4px);
+}
+
+.song.active{
+    background:rgba(0,255,174,0.15);
+    border-color:var(--accent);
+}
+
+.songTitle{
+    font-size:14px;
+    font-weight:500;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+/* MAIN */
+
+.main{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
+
+.player{
+    width:100%;
+    max-width:700px;
+    background:rgba(19,19,26,0.85);
+    border:1px solid rgba(255,255,255,0.06);
+    backdrop-filter:blur(20px);
+    border-radius:30px;
+    padding:35px;
+    box-shadow:0 0 50px rgba(0,255,174,0.08);
+}
+
+.cover{
+    width:220px;
+    height:220px;
+    margin:auto;
+    border-radius:24px;
+    background:linear-gradient(135deg,#00ffae,#00a6ff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:70px;
+    box-shadow:0 0 35px rgba(0,255,174,0.3);
+    animation:float 4s infinite ease-in-out;
+}
+
+@keyframes float{
+    50%{
+        transform:translateY(-10px);
+    }
+}
+
+.nowPlaying{
+    text-align:center;
+    margin-top:25px;
+}
+
+.nowPlaying h1{
+    font-size:28px;
+    margin-bottom:8px;
+}
+
+.nowPlaying p{
+    color:var(--text2);
+}
+
+.progressContainer{
+    margin-top:30px;
+}
+
+.progress{
+    width:100%;
+    height:8px;
+    background:#2a2a36;
+    border-radius:999px;
+    overflow:hidden;
+    cursor:pointer;
+}
+
+.progressBar{
+    height:100%;
+    width:0%;
+    background:var(--accent);
+    border-radius:999px;
+}
+
+.time{
+    display:flex;
+    justify-content:space-between;
+    margin-top:8px;
+    color:var(--text2);
+    font-size:13px;
+}
+
+.controls{
+    margin-top:30px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    background:rgba(255,255,255,0.06);
+    color:white;
+    border:none;
+    width:60px;
+    height:60px;
+    border-radius:18px;
+    cursor:pointer;
+    font-size:22px;
+    transition:0.25s;
+}
+
+.btn:hover{
+    transform:translateY(-4px);
+    background:var(--accent);
+    color:black;
+}
+
+.playBtn{
+    width:80px;
+    height:80px;
+    font-size:30px;
+    background:var(--accent);
+    color:black;
+}
+
+.effects{
+    margin-top:30px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.effectBtn{
+    background:#1e1e29;
+    border:1px solid rgba(255,255,255,0.05);
+    color:white;
+    padding:15px;
+    border-radius:16px;
+    cursor:pointer;
+    transition:0.25s;
+    font-weight:600;
+}
+
+.effectBtn.active{
+    background:var(--accent);
+    color:black;
+}
+
+.volume{
+    margin-top:25px;
+}
+
+.volume input{
+    width:100%;
+}
+
+.visualizer{
+    width:100%;
+    height:90px;
+    margin-top:25px;
+    display:flex;
+    align-items:flex-end;
+    gap:4px;
+}
+
+.bar{
+    flex:1;
+    background:var(--accent);
+    border-radius:999px 999px 0 0;
+    height:20px;
+    animation:bars 1s infinite ease-in-out;
+}
+
+@keyframes bars{
+    50%{
+        height:100%;
+    }
+}
+
+@media(max-width:900px){
+
+    .app{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        height:280px;
+    }
+
+}
+
+</style>
 </head>
 <body>
 
+<div class="app">
+
     <div class="sidebar">
-        <h2>KrtlMusic List</h2>
-        <div class="upload-btn" onclick="document.getElementById('fileInput').click()">➕ ÇOKLU ŞARKI EKLE</div>
-        <input type="file" id="fileInput" multiple accept="audio/*" style="display:none;">
-        <ul class="playlist" id="playlist"></ul>
+
+        <div class="logo">KrtlMusic</div>
+
+        <button class="uploadBtn" onclick="document.getElementById('upload').click()">
+            Dosya Yükle
+        </button>
+
+        <input type="file" id="upload" hidden multiple accept=".mp3,audio/*">
+
+        <div class="playlist" id="playlist"></div>
+
     </div>
 
     <div class="main">
+
         <div class="player">
-            <h1>KRTLMUSIC</h1>
-            <canvas id="visualizer"></canvas>
-            <p id="track-name">Bir şarkı seç kanka...</p>
-            <audio id="audio"></audio>
-            <div class="controls">
-                <button onclick="playMusic()">▶ OYNAT</button>
-                <button onclick="pauseMusic()">⏸ DURDUR</button>
+
+            <div class="cover">🎵</div>
+
+            <div class="nowPlaying">
+                <h1 id="title">Müzik Seçilmedi</h1>
+                <p id="status">Hazır</p>
             </div>
-            <p style="font-size: 0.7rem; color: #8b949e;">Efektler: 8D + Reverb + Bass</p>
+
+            <div class="progressContainer">
+
+                <div class="progress" id="progress">
+                    <div class="progressBar" id="progressBar"></div>
+                </div>
+
+                <div class="time">
+                    <span id="currentTime">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+
+            </div>
+
+            <div class="controls">
+
+                <button class="btn" id="prev">⏮</button>
+
+                <button class="btn playBtn" id="play">▶</button>
+
+                <button class="btn" id="next">⏭</button>
+
+            </div>
+
+            <div class="effects">
+
+                <button class="effectBtn" id="reverbBtn">
+                    Reverb
+                </button>
+
+                <button class="effectBtn" id="bassBtn">
+                    Bass Boost
+                </button>
+
+                <button class="effectBtn" id="eightDBtn">
+                    8D Audio
+                </button>
+
+                <button class="effectBtn" id="echoBtn">
+                    Echo
+                </button>
+
+            </div>
+
+            <div class="volume">
+                <input type="range" min="0" max="1" step="0.01" value="1" id="volume">
+            </div>
+
+            <div class="visualizer" id="visualizer"></div>
+
         </div>
+
     </div>
 
-    <script>
-        const audio = document.getElementById('audio');
-        const playlist = document.getElementById('playlist');
-        const fileInput = document.getElementById('fileInput');
-        const trackName = document.getElementById('track-name');
-        const canvas = document.getElementById('visualizer');
-        const canvasCtx = canvas.getContext('2d');
-        
-        let audioCtx, source, panner, bass, reverb, analyser;
-        let tracks = [];
+</div>
 
-        // Ses Motoru Kurulumu
-        function setupAudio() {
-            if (audioCtx) return;
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            source = audioCtx.createMediaElementSource(audio);
-            
-            bass = audioCtx.createBiquadFilter();
-            bass.type = 'lowshelf';
-            bass.gain.value = 15;
-            bass.frequency.value = 150;
+<script>
 
-            reverb = audioCtx.createConvolver();
-            const rate = audioCtx.sampleRate;
-            const impulse = audioCtx.createBuffer(2, rate * 1.5, rate);
-            reverb.buffer = impulse;
+const audio = new Audio();
 
-            panner = audioCtx.createStereoPanner();
-            analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 256;
+let playlist = [];
+let currentIndex = 0;
 
-            source.connect(bass).connect(reverb).connect(panner).connect(analyser).connect(audioCtx.destination);
-            
-            // 8D Efekt Döngüsü
-            let angle = 0;
-            setInterval(() => { panner.pan.value = Math.sin(angle); angle += 0.05; }, 50);
-            draw();
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+const ctx = new AudioContextClass();
+
+const source = ctx.createMediaElementSource(audio);
+
+const gainNode = ctx.createGain();
+
+const bass = ctx.createBiquadFilter();
+bass.type = "lowshelf";
+bass.frequency.value = 200;
+bass.gain.value = 15;
+
+const panner = ctx.createStereoPanner();
+
+const delay = ctx.createDelay();
+delay.delayTime.value = 0.25;
+
+const feedback = ctx.createGain();
+feedback.gain.value = 0.35;
+
+const convolver = ctx.createConvolver();
+
+source.connect(gainNode);
+gainNode.connect(ctx.destination);
+
+let bassEnabled = false;
+let reverbEnabled = false;
+let echoEnabled = false;
+let eightDEnabled = false;
+
+let panInterval;
+
+function connectAudio(){
+
+    source.disconnect();
+    gainNode.disconnect();
+    bass.disconnect();
+    panner.disconnect();
+    delay.disconnect();
+    feedback.disconnect();
+
+    source.connect(gainNode);
+
+    let lastNode = gainNode;
+
+    if(bassEnabled){
+        lastNode.connect(bass);
+        lastNode = bass;
+    }
+
+    if(eightDEnabled){
+        lastNode.connect(panner);
+        lastNode = panner;
+    }
+
+    if(echoEnabled){
+        lastNode.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        lastNode = delay;
+    }
+
+    lastNode.connect(ctx.destination);
+}
+
+connectAudio();
+
+function start8D(){
+
+    clearInterval(panInterval);
+
+    panInterval = setInterval(() => {
+
+        panner.pan.value = Math.sin(Date.now()/600);
+
+    },20);
+
+}
+
+function stop8D(){
+
+    clearInterval(panInterval);
+    panner.pan.value = 0;
+
+}
+
+const upload = document.getElementById("upload");
+
+upload.addEventListener("change",(e)=>{
+
+    [...e.target.files].forEach(file=>{
+
+        playlist.push(file);
+
+        renderPlaylist();
+
+    });
+
+});
+
+function renderPlaylist(){
+
+    const playlistDiv = document.getElementById("playlist");
+
+    playlistDiv.innerHTML = "";
+
+    playlist.forEach((song,index)=>{
+
+        const div = document.createElement("div");
+
+        div.className = "song";
+
+        if(index === currentIndex){
+            div.classList.add("active");
         }
 
-        // Çoklu Dosya Yükleme
-        fileInput.onchange = (e) => {
-            Array.from(e.target.files).forEach(file => {
-                const track = { name: file.name, url: URL.createObjectURL(file) };
-                tracks.push(track);
-                const li = document.createElement('li');
-                li.innerText = track.name;
-                li.onclick = () => selectTrack(tracks.indexOf(track), li);
-                playlist.appendChild(li);
-            });
+        div.innerHTML = `
+            <div class="songTitle">${song.name}</div>
+        `;
+
+        div.onclick = ()=>{
+
+            currentIndex = index;
+
+            loadSong();
+
         };
 
-        function selectTrack(index, li) {
-            document.querySelectorAll('.playlist li').forEach(el => el.classList.remove('active'));
-            li.classList.add('active');
-            audio.src = tracks[index].url;
-            trackName.innerText = "Çalıyor: " + tracks[index].name;
-            setupAudio();
-            audio.play();
-        }
+        playlistDiv.appendChild(div);
 
-        function playMusic() { if(audio.src) { audioCtx.resume(); audio.play(); } }
-        function pauseMusic() { audio.pause(); }
+    });
 
-        // Görselleştirici Çizimi
-        function draw() {
-            requestAnimationFrame(draw);
-            if(!analyser) return;
-            const data = new Uint8Array(analyser.frequencyBinCount);
-            analyser.getByteFrequencyData(data);
-            canvasCtx.fillStyle = '#000';
-            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-            canvasCtx.fillStyle = '#58a6ff';
-            data.forEach((val, i) => {
-                const h = (val / 255) * canvas.height;
-                canvasCtx.fillRect(i * 3, canvas.height - h, 2, h);
-            });
-        }
-    </script>
+}
+
+function loadSong(){
+
+    if(!playlist[currentIndex]) return;
+
+    const file = playlist[currentIndex];
+
+    audio.src = URL.createObjectURL(file);
+
+    document.getElementById("title").innerText = file.name;
+
+    document.getElementById("status").innerText = "Şimdi Çalıyor";
+
+    renderPlaylist();
+
+    playSong();
+
+}
+
+async function playSong(){
+
+    await ctx.resume();
+
+    audio.play();
+
+    document.getElementById("play").innerText = "⏸";
+
+}
+
+function pauseSong(){
+
+    audio.pause();
+
+    document.getElementById("play").innerText = "▶";
+
+}
+
+document.getElementById("play").onclick = ()=>{
+
+    if(!audio.src) return;
+
+    if(audio.paused){
+        playSong();
+    }else{
+        pauseSong();
+    }
+
+};
+
+document.getElementById("next").onclick = ()=>{
+
+    if(currentIndex < playlist.length - 1){
+
+        currentIndex++;
+
+        loadSong();
+
+    }
+
+};
+
+document.getElementById("prev").onclick = ()=>{
+
+    if(currentIndex > 0){
+
+        currentIndex--;
+
+        loadSong();
+
+    }
+
+};
+
+document.getElementById("volume").oninput = (e)=>{
+
+    audio.volume = e.target.value;
+
+};
+
+document.getElementById("bassBtn").onclick = function(){
+
+    bassEnabled = !bassEnabled;
+
+    this.classList.toggle("active");
+
+    connectAudio();
+
+};
+
+document.getElementById("echoBtn").onclick = function(){
+
+    echoEnabled = !echoEnabled;
+
+    this.classList.toggle("active");
+
+    connectAudio();
+
+};
+
+document.getElementById("eightDBtn").onclick = function(){
+
+    eightDEnabled = !eightDEnabled;
+
+    this.classList.toggle("active");
+
+    connectAudio();
+
+    if(eightDEnabled){
+        start8D();
+    }else{
+        stop8D();
+    }
+
+};
+
+document.getElementById("reverbBtn").onclick = function(){
+
+    reverbEnabled = !reverbEnabled;
+
+    this.classList.toggle("active");
+
+};
+
+audio.addEventListener("timeupdate",()=>{
+
+    const progress = (audio.currentTime / audio.duration) * 100;
+
+    document.getElementById("progressBar").style.width = progress + "%";
+
+    document.getElementById("currentTime").innerText = format(audio.currentTime);
+
+    document.getElementById("duration").innerText = format(audio.duration);
+
+});
+
+document.getElementById("progress").onclick = (e)=>{
+
+    const width = e.currentTarget.clientWidth;
+
+    const clickX = e.offsetX;
+
+    audio.currentTime = (clickX / width) * audio.duration;
+
+};
+
+function format(time){
+
+    if(isNaN(time)) return "0:00";
+
+    const min = Math.floor(time / 60);
+
+    const sec = Math.floor(time % 60);
+
+    return `${min}:${sec < 10 ? "0"+sec : sec}`;
+
+}
+
+audio.addEventListener("ended",()=>{
+
+    if(currentIndex < playlist.length - 1){
+
+        currentIndex++;
+
+        loadSong();
+
+    }
+
+});
+
+const visualizer = document.getElementById("visualizer");
+
+for(let i=0;i<40;i++){
+
+    const bar = document.createElement("div");
+
+    bar.className = "bar";
+
+    bar.style.animationDelay = `${i*0.05}s`;
+
+    bar.style.height = `${20 + Math.random()*80}px`;
+
+    visualizer.appendChild(bar);
+
+}
+
+</script>
+
 </body>
 </html>
+```
