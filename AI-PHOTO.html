@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AKanka AI Studio - Ultra Control</title>
+    <title>AKanka AI Studio - Ultra Control V2</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -170,7 +170,6 @@
             <div class="admin-trigger" onclick="toggleModal(true)">🔐 Admin Girişi</div>
         </header>
 
-        <!-- CANLI ADMİN PANELİ -->
         <div class="admin-dashboard" id="adminDashboard">
             <h3 style="color: var(--admin-color); margin-top: 0; font-size: 1.4rem;">⚡ KrtlTech Root Terminal (Sistem Yetkisi Alındı)</h3>
             <p style="font-size: 1.1rem;">Sistem Motorları Durumu: <span id="statusText" style="color: var(--success-color); font-weight: bold;">ÇALIŞIYOR (ONLINE)</span></p>
@@ -180,7 +179,6 @@
         </div>
 
         <div class="main-content">
-            <!-- SOHBET KARTI -->
             <div class="card" id="chatCard">
                 <div class="system-lockout" id="chatLock">❌ YAPAY ZEKA FAALİYETLERİ ADMİN EMRİYLE DURDURULDU</div>
                 <h2>💬 AI Canlı Sohbet</h2>
@@ -193,7 +191,6 @@
                 </div>
             </div>
 
-            <!-- RESİM ÜRETME KARTI -->
             <div class="card" id="imageCard">
                 <div class="system-lockout" id="imageLock">❌ GÖRÜNTÜ MOTORU ADMİN EMRİYLE KİLİTLENDİ</div>
                 <h2>🎨 AI Resim Fabrikası</h2>
@@ -208,7 +205,6 @@
         </div>
     </div>
 
-    <!-- GİRİŞ MODALI -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <h3 style="margin-top: 0; color: var(--accent-color); font-size: 1.3rem; text-align: center;">KrtlTech Yetkilendirme</h3>
@@ -285,7 +281,7 @@
             document.getElementById('imageBox').innerHTML = '<p style="color: #64748b;">Buraya hayalindeki dünyayı yaz, anında çizsin kanka!</p>';
         }
 
-        // 💬 GERÇEK YAPAY ZEKA SOHBET MOTORU (API KEY GEREKTİRMEZ)
+        // 💬 YENİLENMİŞ VE ARACISIZ YAPAY ZEKA SOHBET MOTORU
         async function sendMessage() {
             if(!isSystemActive) return;
 
@@ -298,54 +294,10 @@
             input.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Loading animasyonu
             const loadingId = "load_" + Date.now();
             chatBox.innerHTML += `<div class="message bot" id="${loadingId}">Düşünüyorum kanka... 🧠⚡</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
-                // Ücretsiz, herkese açık yapay zeka uç noktası (Kanka sistemi yormaz)
-                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://text.pollinations.ai/' + encodeURIComponent(messageText))}`);
-                const data = await response.json();
-                
-                document.getElementById(loadingId).remove();
-                
-                if(data.contents) {
-                    chatBox.innerHTML += `<div class="message bot">${data.contents}</div>`;
-                } else {
-                    chatBox.innerHTML += `<div class="message bot">Bağlantıda bir parazit var kanka, tekrar yazar mısın?</div>`;
-                }
-            } catch (error) {
-                document.getElementById(loadingId).remove();
-                chatBox.innerHTML += `<div class="message bot">Sistem ağ hatası verdi kanka, ama admin panelimiz hala taş gibi! 😎</div>`;
-            }
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        // 🎨 GERÇEK YAPAY ZEKA GÖRÜSÜ (ANINDA RESİM ÜRETİR)
-        function generateImage() {
-            if(!isSystemActive) return;
-
-            const input = document.getElementById('imageInput');
-            const prompt = input.value.trim();
-            if(!prompt) return;
-
-            const imageBox = document.getElementById('imageBox');
-            imageBox.innerHTML = `<p style="color: var(--accent-color); font-weight:bold; font-size:1.1rem;">KrtlTech Sunucuları Çiziyor... 🎨🚀<br><small style="color:#64748b;">(Birkaç saniye sürebilir)</small></p>`;
-
-            // Pollinations AI yüksek hızlı görsel motoru (API anahtarsız canlı üretim)
-            const randomSeed = Math.floor(Math.random() * 999999);
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=500&height=500&nologo=true&seed=${randomSeed}`;
-
-            const img = new Image();
-            img.src = imageUrl;
-            img.onload = function() {
-                imageBox.innerHTML = `<img src="${imageUrl}" alt="${prompt}">`;
-            };
-            img.onerror = function() {
-                imageBox.innerHTML = `<p style="color: var(--admin-color);">Görsel oluşturma sunucusuna bağlanılamadı kanka.</p>`;
-            };
-        }
-    </script>
-</body>
-</html>
+                // Doğrudan istek atıyoruz, aradaki yavaş proxy sitelerini aradan çıkardık!
+                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(messageText)}?system=Sen kankasının dilinden
