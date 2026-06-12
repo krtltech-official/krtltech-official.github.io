@@ -1,714 +1,379 @@
-# KrtlMusic v1 — Tek HTML Profesyonel Sürüm
-
-Aşağıdaki kodu `index.html` olarak kaydet.
-
-```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KrtlMusic</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-
-:root{
-    --bg:#0b0b0f;
-    --panel:#13131a;
-    --card:#1a1a24;
-    --accent:#00ffae;
-    --text:#ffffff;
-    --text2:#a7a7b3;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
-
-body{
-    background:linear-gradient(135deg,#070709,#101018);
-    color:var(--text);
-    height:100vh;
-    overflow:hidden;
-}
-
-.app{
-    display:flex;
-    width:100%;
-    height:100%;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-    width:320px;
-    background:rgba(19,19,26,0.9);
-    border-right:1px solid rgba(255,255,255,0.06);
-    backdrop-filter:blur(15px);
-    padding:20px;
-    display:flex;
-    flex-direction:column;
-}
-
-.logo{
-    font-size:30px;
-    font-weight:700;
-    color:var(--accent);
-    margin-bottom:20px;
-    text-align:center;
-}
-
-.uploadBtn{
-    background:var(--accent);
-    color:black;
-    border:none;
-    padding:14px;
-    border-radius:14px;
-    font-weight:600;
-    cursor:pointer;
-    margin-bottom:20px;
-    transition:0.25s;
-}
-
-.uploadBtn:hover{
-    transform:scale(1.03);
-}
-
-.playlist{
-    flex:1;
-    overflow-y:auto;
-}
-
-.song{
-    background:rgba(255,255,255,0.04);
-    padding:14px;
-    border-radius:14px;
-    margin-bottom:10px;
-    cursor:pointer;
-    transition:0.25s;
-    border:1px solid transparent;
-}
-
-.song:hover{
-    border-color:var(--accent);
-    transform:translateX(4px);
-}
-
-.song.active{
-    background:rgba(0,255,174,0.15);
-    border-color:var(--accent);
-}
-
-.songTitle{
-    font-size:14px;
-    font-weight:500;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-}
-
-/* MAIN */
-
-.main{
-    flex:1;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:30px;
-}
-
-.player{
-    width:100%;
-    max-width:700px;
-    background:rgba(19,19,26,0.85);
-    border:1px solid rgba(255,255,255,0.06);
-    backdrop-filter:blur(20px);
-    border-radius:30px;
-    padding:35px;
-    box-shadow:0 0 50px rgba(0,255,174,0.08);
-}
-
-.cover{
-    width:220px;
-    height:220px;
-    margin:auto;
-    border-radius:24px;
-    background:linear-gradient(135deg,#00ffae,#00a6ff);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:70px;
-    box-shadow:0 0 35px rgba(0,255,174,0.3);
-    animation:float 4s infinite ease-in-out;
-}
-
-@keyframes float{
-    50%{
-        transform:translateY(-10px);
-    }
-}
-
-.nowPlaying{
-    text-align:center;
-    margin-top:25px;
-}
-
-.nowPlaying h1{
-    font-size:28px;
-    margin-bottom:8px;
-}
-
-.nowPlaying p{
-    color:var(--text2);
-}
-
-.progressContainer{
-    margin-top:30px;
-}
-
-.progress{
-    width:100%;
-    height:8px;
-    background:#2a2a36;
-    border-radius:999px;
-    overflow:hidden;
-    cursor:pointer;
-}
-
-.progressBar{
-    height:100%;
-    width:0%;
-    background:var(--accent);
-    border-radius:999px;
-}
-
-.time{
-    display:flex;
-    justify-content:space-between;
-    margin-top:8px;
-    color:var(--text2);
-    font-size:13px;
-}
-
-.controls{
-    margin-top:30px;
-    display:flex;
-    justify-content:center;
-    gap:15px;
-    flex-wrap:wrap;
-}
-
-.btn{
-    background:rgba(255,255,255,0.06);
-    color:white;
-    border:none;
-    width:60px;
-    height:60px;
-    border-radius:18px;
-    cursor:pointer;
-    font-size:22px;
-    transition:0.25s;
-}
-
-.btn:hover{
-    transform:translateY(-4px);
-    background:var(--accent);
-    color:black;
-}
-
-.playBtn{
-    width:80px;
-    height:80px;
-    font-size:30px;
-    background:var(--accent);
-    color:black;
-}
-
-.effects{
-    margin-top:30px;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-}
-
-.effectBtn{
-    background:#1e1e29;
-    border:1px solid rgba(255,255,255,0.05);
-    color:white;
-    padding:15px;
-    border-radius:16px;
-    cursor:pointer;
-    transition:0.25s;
-    font-weight:600;
-}
-
-.effectBtn.active{
-    background:var(--accent);
-    color:black;
-}
-
-.volume{
-    margin-top:25px;
-}
-
-.volume input{
-    width:100%;
-}
-
-.visualizer{
-    width:100%;
-    height:90px;
-    margin-top:25px;
-    display:flex;
-    align-items:flex-end;
-    gap:4px;
-}
-
-.bar{
-    flex:1;
-    background:var(--accent);
-    border-radius:999px 999px 0 0;
-    height:20px;
-    animation:bars 1s infinite ease-in-out;
-}
-
-@keyframes bars{
-    50%{
-        height:100%;
-    }
-}
-
-@media(max-width:900px){
-
-    .app{
-        flex-direction:column;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>krtlCall - Cloud Engine</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body {
+      background-color: #0b0c10; color: #c5c6c7;
+      display: flex; flex-direction: column; align-items: center;
+      min-height: 100vh; padding: 20px; overflow-x: hidden;
     }
 
-    .sidebar{
-        width:100%;
-        height:280px;
+    /* ÜST PANEL: ID BİLGİSİ */
+    .top-bar {
+      width: 100%; max-width: 1100px; display: flex; justify-content: space-between;
+      align-items: center; background: rgba(31, 40, 51, 0.6);
+      backdrop-filter: blur(12px); padding: 15px 25px; border-radius: 16px;
+      border: 1px solid rgba(102, 252, 241, 0.2); margin-bottom: 25px;
+    }
+    .logo { font-size: 1.5rem; font-weight: 700; color: #fff; letter-spacing: 1px; }
+    .logo span { color: #66fcf1; }
+    .my-id-container { display: flex; align-items: center; gap: 10px; }
+    .id-badge {
+      background: #1f2833; color: #66fcf1; padding: 8px 16px;
+      border-radius: 8px; font-weight: 700; letter-spacing: 2px;
+      border: 1px solid #66fcf1; font-size: 1.1rem;
     }
 
-}
+    /* SOL ÜST GELEN ÇAĞRI BİLDİRİMİ (POPUP) */
+    .incoming-call-toast {
+      position: fixed; top: 20px; left: -400px; width: 320px;
+      background: #1f2833; border-left: 5px solid #66fcf1;
+      padding: 15px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 9999; display: flex; flex-direction: column; gap: 12px;
+      transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .incoming-call-toast.show { left: 20px; }
+    .caller-info { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 600; }
+    .toast-buttons { display: flex; gap: 10px; }
+    .btn-toast {
+      flex: 1; padding: 8px; border: none; border-radius: 6px;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .btn-accept { background: #45f3ff; color: #000; }
+    .btn-decline { background: #ff4757; color: #fff; }
 
-</style>
+    /* ANA BAĞLANTI PANELİ */
+    .connect-panel {
+      width: 100%; max-width: 450px; background: #151a21;
+      padding: 25px; border-radius: 16px; border: 1px solid #1f2833;
+      text-align: center; margin-bottom: 25px; position: relative;
+    }
+    .search-container { position: relative; width: 100%; margin-bottom: 15px; }
+    input {
+      width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #1f2833;
+      background: #0b0c10; color: #fff; font-size: 1rem; outline: none;
+      transition: 0.3s; text-align: center; letter-spacing: 1px;
+    }
+    input:focus { border-color: #66fcf1; box-shadow: 0 0 10px rgba(102, 252, 241, 0.2); }
+    
+    /* Otomatik Tamamlama Listesi */
+    .autocomplete-list {
+      position: absolute; top: 100%; left: 0; width: 100%;
+      background: #1f2833; border-radius: 8px; border: 1px solid #444;
+      max-height: 150px; overflow-y: auto; z-index: 10; display: none;
+    }
+    .autocomplete-item {
+      padding: 12px; cursor: pointer; text-align: left; color: #fff;
+      border-bottom: 1px solid #151a21;
+    }
+    .autocomplete-item:hover { background: #66fcf1; color: #000; font-weight: bold; }
+
+    .btn-main {
+      width: 100%; padding: 14px; border: none; border-radius: 10px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: 0.2s; background: #66fcf1; color: #0b0c10;
+    }
+    .btn-main:hover { background: #45f3ff; transform: translateY(-2px); }
+
+    /* VİDEO GRID */
+    .video-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+      width: 100%; max-width: 1100px; margin-bottom: 25px;
+    }
+    .video-wrapper {
+      position: relative; background: #151a21; border-radius: 16px;
+      overflow: hidden; aspect-ratio: 16/10; border: 1px solid #1f2833;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+    video { width: 100%; height: 100%; object-fit: cover; background: #000; }
+    .mirror { transform: scaleX(-1); }
+    .video-tag {
+      position: absolute; bottom: 15px; left: 15px;
+      background: rgba(11, 12, 16, 0.8); padding: 6px 14px;
+      border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1); color: #fff;
+    }
+
+    /* ALT MEDYA KONTROLLERİ */
+    .media-controls { display: flex; gap: 20px; }
+    .btn-circle {
+      width: 55px; height: 55px; border-radius: 50%; border: none;
+      background: #1f2833; color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: 0.2s; border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-circle:hover { background: #2c3540; color: #66fcf1; }
+    .btn-hangup-main { background: #ff4757 !important; }
+    .btn-hangup-main:hover { background: #ff6b81 !important; }
+    .muted-mode { background: #ff4757 !important; color: #fff !important; }
+  </style>
 </head>
 <body>
 
-<div class="app">
-
-    <div class="sidebar">
-
-        <div class="logo">KrtlMusic</div>
-
-        <button class="uploadBtn" onclick="document.getElementById('upload').click()">
-            Dosya Yükle
-        </button>
-
-        <input type="file" id="upload" hidden multiple accept=".mp3,audio/*">
-
-        <div class="playlist" id="playlist"></div>
-
+  <div class="top-bar">
+    <div class="logo">krtl<span>Call</span></div>
+    <div class="my-id-container">
+      <span style="font-size: 0.9rem; color: #95a5a6;">Senin ID Kodun:</span>
+      <div class="id-badge" id="my-id">Sistem Başlatılıyor...</div>
     </div>
+  </div>
 
-    <div class="main">
-
-        <div class="player">
-
-            <div class="cover">🎵</div>
-
-            <div class="nowPlaying">
-                <h1 id="title">Müzik Seçilmedi</h1>
-                <p id="status">Hazır</p>
-            </div>
-
-            <div class="progressContainer">
-
-                <div class="progress" id="progress">
-                    <div class="progressBar" id="progressBar"></div>
-                </div>
-
-                <div class="time">
-                    <span id="currentTime">0:00</span>
-                    <span id="duration">0:00</span>
-                </div>
-
-            </div>
-
-            <div class="controls">
-
-                <button class="btn" id="prev">⏮</button>
-
-                <button class="btn playBtn" id="play">▶</button>
-
-                <button class="btn" id="next">⏭</button>
-
-            </div>
-
-            <div class="effects">
-
-                <button class="effectBtn" id="reverbBtn">
-                    Reverb
-                </button>
-
-                <button class="effectBtn" id="bassBtn">
-                    Bass Boost
-                </button>
-
-                <button class="effectBtn" id="eightDBtn">
-                    8D Audio
-                </button>
-
-                <button class="effectBtn" id="echoBtn">
-                    Echo
-                </button>
-
-            </div>
-
-            <div class="volume">
-                <input type="range" min="0" max="1" step="0.01" value="1" id="volume">
-            </div>
-
-            <div class="visualizer" id="visualizer"></div>
-
-        </div>
-
+  <div class="incoming-call-toast" id="incoming-toast">
+    <div class="caller-info">
+      <span class="material-icons" style="color: #66fcf1;">phone_in_talk</span>
+      <span id="caller-id-text">Gelen Çağrı...</span>
     </div>
+    <div class="toast-buttons">
+      <button class="btn-toast btn-accept" id="accept-btn">
+        <span class="material-icons">call</span> Kabul Et
+      </button>
+      <button class="btn-toast btn-decline" id="decline-btn">
+        <span class="material-icons">call_end</span> Reddet
+      </button>
+    </div>
+  </div>
 
-</div>
+  <div class="connect-panel">
+    <div class="search-container">
+      <input type="text" id="target-id-input" placeholder="Bağlanılacak ID Yazın..." maxlength="5">
+      <div class="autocomplete-list" id="autocomplete-box"></div>
+    </div>
+    <button class="btn-main" id="connect-btn">
+      <span class="material-icons">bolt</span> ID'ye Doğrudan Bağlan
+    </button>
+  </div>
 
-<script>
+  <div class="video-grid">
+    <div class="video-wrapper">
+      <video id="localVideo" autoplay playsinline muted class="mirror"></video>
+      <div class="video-tag">Senin Kameran</div>
+    </div>
+    <div class="video-wrapper">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="video-tag" id="remote-tag">Karşı Taraf (Bekleniyor)</div>
+    </div>
+  </div>
 
-const audio = new Audio();
+  <div class="media-controls">
+    <button class="btn-circle" id="mic-toggle"><span class="material-icons">mic</span></button>
+    <button class="btn-circle" id="cam-toggle"><span class="material-icons">videocam</span></button>
+    <button class="btn-circle btn-hangup-main" id="hangup-btn"><span class="material-icons">call_end</span></button>
+  </div>
 
-let playlist = [];
-let currentIndex = 0;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-const ctx = new AudioContextClass();
+    // Senin Paylaştığın Yapılandırma Verileri
+    const firebaseConfig = {
+      apiKey: "AIzaSyCPfjy0W_FFd0lm6IfS490QL6PU9AODSHY",
+      authDomain: "krtlai.firebaseapp.com",
+      projectId: "krtlai",
+      storageBucket: "krtlai.firebasestorage.app",
+      messagingSenderId: "1035148986528",
+      appId: "1:1035148986528:web:359d8a74025ffdc1d4a1c5",
+      measurementId: "G-CFEYN4P022"
+    };
 
-const source = ctx.createMediaElementSource(audio);
+    // Firebase ve Firestore Servislerini Başlatıyoruz
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-const gainNode = ctx.createGain();
+    let localStream = null;
+    let peer = null;
+    let currentCall = null;
+    let incomingCallRef = null;
+    let myGeneratedID = "";
+    let micMuted = false;
+    let camMuted = false;
 
-const bass = ctx.createBiquadFilter();
-bass.type = "lowshelf";
-bass.frequency.value = 200;
-bass.gain.value = 15;
+    // Elementlerin Seçimi
+    const myIdDisplay = document.getElementById('my-id');
+    const targetInput = document.getElementById('target-id-input');
+    const autocompleteBox = document.getElementById('autocomplete-box');
+    const connectBtn = document.getElementById('connect-btn');
+    const incomingToast = document.getElementById('incoming-toast');
+    const callerIdText = document.getElementById('caller-id-text');
+    const localVideo = document.getElementById('localVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+    const remoteTag = document.getElementById('remote-tag');
 
-const panner = ctx.createStereoPanner();
-
-const delay = ctx.createDelay();
-delay.delayTime.value = 0.25;
-
-const feedback = ctx.createGain();
-feedback.gain.value = 0.35;
-
-const convolver = ctx.createConvolver();
-
-source.connect(gainNode);
-gainNode.connect(ctx.destination);
-
-let bassEnabled = false;
-let reverbEnabled = false;
-let echoEnabled = false;
-let eightDEnabled = false;
-
-let panInterval;
-
-function connectAudio(){
-
-    source.disconnect();
-    gainNode.disconnect();
-    bass.disconnect();
-    panner.disconnect();
-    delay.disconnect();
-    feedback.disconnect();
-
-    source.connect(gainNode);
-
-    let lastNode = gainNode;
-
-    if(bassEnabled){
-        lastNode.connect(bass);
-        lastNode = bass;
+    // 🎲 5 HANELİ RASTGELE ID GENERATOR
+    function generateShortID() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < 5; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
     }
 
-    if(eightDEnabled){
-        lastNode.connect(panner);
-        lastNode = panner;
+    // 🚀 ANA MOTORU ÇALIŞTIR
+    async function initPlatform() {
+      try {
+        // 1. Donanımı Aç
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideo.srcObject = localStream;
+
+        // 2. ID Üret ve PeerJS Başlat
+        myGeneratedID = generateShortID();
+        peer = new Peer(myGeneratedID);
+
+        peer.on('open', async (id) => {
+          myIdDisplay.textContent = id;
+          
+          // 🔥 CLOUD ADIMI: Üretilen 5 haneli ID'yi Firestore "online_users" koleksiyonuna kaydet
+          await setDoc(doc(db, "online_users", id), {
+            userId: id,
+            timestamp: Date.now()
+          });
+          console.log("ID Firestore Bulutuna Yazıldı:", id);
+        });
+
+        // 🚨 3. BİRİ BİZİ ARADIĞINDA POPUP FIRLAT
+        peer.on('call', (call) => {
+          incomingCallRef = call;
+          callerIdText.textContent = `ID: ${call.peer} Arıyor...`;
+          incomingToast.classList.add('show');
+        });
+
+      } catch (err) {
+        console.error("Başlatma hatası:", err);
+        alert("Kamera/Mikrofon izni şart kanka!");
+      }
     }
 
-    if(echoEnabled){
-        lastNode.connect(delay);
-        delay.connect(feedback);
-        feedback.connect(delay);
-        lastNode = delay;
-    }
+    // 🔍 CLOUD AUTOCOMPLETE (Firestore'dan Canlı Eşleşen ID'leri Çekme)
+    targetInput.addEventListener('input', async (e) => {
+      const val = e.target.value.toUpperCase();
+      targetInput.value = val;
+      autocompleteBox.innerHTML = '';
+      
+      // En az 2 karakter yazıldığında tetiklenir
+      if (val.length >= 2) {
+        try {
+          // Firestore'daki aktif kullanıcıları oku
+          const querySnapshot = await getDocs(collection(db, "online_users"));
+          let matches = [];
+          
+          querySnapshot.forEach((doc) => {
+            const activeId = doc.id;
+            // Kendi ID'mizi listede önermeyelim ve arama kriteri uysun
+            if (activeId.startsWith(val) && activeId !== myGeneratedID) {
+              matches.push(activeId);
+            }
+          });
 
-    lastNode.connect(ctx.destination);
-}
-
-connectAudio();
-
-function start8D(){
-
-    clearInterval(panInterval);
-
-    panInterval = setInterval(() => {
-
-        panner.pan.value = Math.sin(Date.now()/600);
-
-    },20);
-
-}
-
-function stop8D(){
-
-    clearInterval(panInterval);
-    panner.pan.value = 0;
-
-}
-
-const upload = document.getElementById("upload");
-
-upload.addEventListener("change",(e)=>{
-
-    [...e.target.files].forEach(file=>{
-
-        playlist.push(file);
-
-        renderPlaylist();
-
-    });
-
-});
-
-function renderPlaylist(){
-
-    const playlistDiv = document.getElementById("playlist");
-
-    playlistDiv.innerHTML = "";
-
-    playlist.forEach((song,index)=>{
-
-        const div = document.createElement("div");
-
-        div.className = "song";
-
-        if(index === currentIndex){
-            div.classList.add("active");
+          if (matches.length > 0) {
+            autocompleteBox.style.display = 'block';
+            matches.forEach(match => {
+              const item = document.createElement('div');
+              item.className = 'autocomplete-item';
+              item.textContent = match;
+              item.onclick = () => {
+                targetInput.value = match;
+                autocompleteBox.style.display = 'none';
+              };
+              autocompleteBox.appendChild(item);
+            });
+          } else {
+            autocompleteBox.style.display = 'none';
+          }
+        } catch (error) {
+          console.error("Firestore'dan veri çekilemedi:", error);
         }
-
-        div.innerHTML = `
-            <div class="songTitle">${song.name}</div>
-        `;
-
-        div.onclick = ()=>{
-
-            currentIndex = index;
-
-            loadSong();
-
-        };
-
-        playlistDiv.appendChild(div);
-
+      } else {
+        autocompleteBox.style.display = 'none';
+      }
     });
 
-}
-
-function loadSong(){
-
-    if(!playlist[currentIndex]) return;
-
-    const file = playlist[currentIndex];
-
-    audio.src = URL.createObjectURL(file);
-
-    document.getElementById("title").innerText = file.name;
-
-    document.getElementById("status").innerText = "Şimdi Çalıyor";
-
-    renderPlaylist();
-
-    playSong();
-
-}
-
-async function playSong(){
-
-    await ctx.resume();
-
-    audio.play();
-
-    document.getElementById("play").innerText = "⏸";
-
-}
-
-function pauseSong(){
-
-    audio.pause();
-
-    document.getElementById("play").innerText = "▶";
-
-}
-
-document.getElementById("play").onclick = ()=>{
-
-    if(!audio.src) return;
-
-    if(audio.paused){
-        playSong();
-    }else{
-        pauseSong();
-    }
-
-};
-
-document.getElementById("next").onclick = ()=>{
-
-    if(currentIndex < playlist.length - 1){
-
-        currentIndex++;
-
-        loadSong();
-
-    }
-
-};
-
-document.getElementById("prev").onclick = ()=>{
-
-    if(currentIndex > 0){
-
-        currentIndex--;
-
-        loadSong();
-
-    }
-
-};
-
-document.getElementById("volume").oninput = (e)=>{
-
-    audio.volume = e.target.value;
-
-};
-
-document.getElementById("bassBtn").onclick = function(){
-
-    bassEnabled = !bassEnabled;
-
-    this.classList.toggle("active");
-
-    connectAudio();
-
-};
-
-document.getElementById("echoBtn").onclick = function(){
-
-    echoEnabled = !echoEnabled;
-
-    this.classList.toggle("active");
-
-    connectAudio();
-
-};
-
-document.getElementById("eightDBtn").onclick = function(){
-
-    eightDEnabled = !eightDEnabled;
-
-    this.classList.toggle("active");
-
-    connectAudio();
-
-    if(eightDEnabled){
-        start8D();
-    }else{
-        stop8D();
-    }
-
-};
-
-document.getElementById("reverbBtn").onclick = function(){
-
-    reverbEnabled = !reverbEnabled;
-
-    this.classList.toggle("active");
-
-};
-
-audio.addEventListener("timeupdate",()=>{
-
-    const progress = (audio.currentTime / audio.duration) * 100;
-
-    document.getElementById("progressBar").style.width = progress + "%";
-
-    document.getElementById("currentTime").innerText = format(audio.currentTime);
-
-    document.getElementById("duration").innerText = format(audio.duration);
-
-});
-
-document.getElementById("progress").onclick = (e)=>{
-
-    const width = e.currentTarget.clientWidth;
-
-    const clickX = e.offsetX;
-
-    audio.currentTime = (clickX / width) * audio.duration;
-
-};
-
-function format(time){
-
-    if(isNaN(time)) return "0:00";
-
-    const min = Math.floor(time / 60);
-
-    const sec = Math.floor(time % 60);
-
-    return `${min}:${sec < 10 ? "0"+sec : sec}`;
-
-}
-
-audio.addEventListener("ended",()=>{
-
-    if(currentIndex < playlist.length - 1){
-
-        currentIndex++;
-
-        loadSong();
-
-    }
-
-});
-
-const visualizer = document.getElementById("visualizer");
-
-for(let i=0;i<40;i++){
-
-    const bar = document.createElement("div");
-
-    bar.className = "bar";
-
-    bar.style.animationDelay = `${i*0.05}s`;
-
-    bar.style.height = `${20 + Math.random()*80}px`;
-
-    visualizer.appendChild(bar);
-
-}
-
-</script>
-
+    // 📞 DIŞARIYI ARAMA BUTONU
+    connectBtn.addEventListener('click', () => {
+      const targetID = targetInput.value.trim();
+      if (targetID.length !== 5) return alert("5 haneli ID şart kanka!");
+
+      remoteTag.textContent = `Aranıyor: ${targetID}...`;
+      
+      const call = peer.call(targetID, localStream);
+      currentCall = call;
+
+      call.on('stream', (remoteStream) => {
+        remoteVideo.srcObject = remoteStream;
+        remoteTag.textContent = `Canlı Görüşme: ${targetID}`;
+      });
+    });
+
+    // ✔️ GELEN ÇAĞRIYI ONAYLA (Sol Üst)
+    document.getElementById('accept-btn').addEventListener('click', () => {
+      if (incomingCallRef) {
+        incomingToast.classList.remove('show');
+        incomingCallRef.answer(localStream);
+        currentCall = incomingCallRef;
+
+        currentCall.on('stream', (remoteStream) => {
+          remoteVideo.srcObject = remoteStream;
+          remoteTag.textContent = `Canlı Görüşme: ${currentCall.peer}`;
+        });
+      }
+    });
+
+    // ❌ GELEN ÇAĞRIYI REDDET
+    document.getElementById('decline-btn').addEventListener('click', () => {
+      incomingToast.classList.remove('show');
+      if (incomingCallRef) {
+        incomingCallRef.close();
+        incomingCallRef = null;
+      }
+    });
+
+    // 🎙️ MİKROFON KONTROLÜ
+    document.getElementById('mic-toggle').addEventListener('click', () => {
+      micMuted = !micMuted;
+      localStream.getAudioTracks()[0].enabled = !micMuted;
+      document.getElementById('mic-toggle').classList.toggle('muted-mode', micMuted);
+      document.getElementById('mic-toggle').querySelector('.material-icons').textContent = micMuted ? 'mic_off' : 'mic';
+    });
+
+    // 📹 KAMERA KONTROLÜ
+    document.getElementById('cam-toggle').addEventListener('click', () => {
+      camMuted = !camMuted;
+      localStream.getVideoTracks()[0].enabled = !camMuted;
+      document.getElementById('cam-toggle').classList.toggle('muted-mode', camMuted);
+      document.getElementById('cam-toggle').querySelector('.material-icons').textContent = camMuted ? 'videocam_off' : 'videocam';
+    });
+
+    // 🛑 GÖRÜŞMEYİ KAPAT
+    document.getElementById('hangup-btn').addEventListener('click', () => {
+      if (currentCall) {
+        currentCall.close();
+        currentCall = null;
+      }
+      remoteVideo.srcObject = null;
+      remoteTag.textContent = "Görüşme Sonlandırıldı.";
+    });
+
+    // 🧹 ÇIKIŞ KONTROLÜ: Kullanıcı sekmeyi veya siteyi kapattığında Firestore'daki ID'sini otomatik siler!
+    window.addEventListener('beforeunload', async () => {
+      if (myGeneratedID) {
+        await deleteDoc(doc(db, "online_users", myGeneratedID));
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target !== targetInput) autocompleteBox.style.display = 'none';
+    });
+
+    // Tetikleyiciyi ateşle
+    initPlatform();
+  </script>
 </body>
 </html>
-```
