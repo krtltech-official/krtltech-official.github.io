@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>krtlCall - Cloud Engine</title>
+  <title>krtlCall Enterprise (Max 25 Person + AI Moderation)</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -11,169 +11,139 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body {
-      background-color: #0b0c10; color: #c5c6c7;
+      background-color: #08090c; color: #a8b2c1;
       display: flex; flex-direction: column; align-items: center;
       min-height: 100vh; padding: 20px; overflow-x: hidden;
     }
 
-    /* ÜST PANEL: ID BİLGİSİ */
+    /* ÜST BAR */
     .top-bar {
-      width: 100%; max-width: 1100px; display: flex; justify-content: space-between;
-      align-items: center; background: rgba(31, 40, 51, 0.6);
+      width: 100%; max-width: 1300px; display: flex; justify-content: space-between;
+      align-items: center; background: rgba(17, 22, 32, 0.7);
       backdrop-filter: blur(12px); padding: 15px 25px; border-radius: 16px;
-      border: 1px solid rgba(102, 252, 241, 0.2); margin-bottom: 25px;
+      border: 1px solid rgba(69, 243, 255, 0.1); margin-bottom: 20px;
     }
-    .logo { font-size: 1.5rem; font-weight: 700; color: #fff; letter-spacing: 1px; }
-    .logo span { color: #66fcf1; }
-    .my-id-container { display: flex; align-items: center; gap: 10px; }
-    .id-badge {
-      background: #1f2833; color: #66fcf1; padding: 8px 16px;
-      border-radius: 8px; font-weight: 700; letter-spacing: 2px;
-      border: 1px solid #66fcf1; font-size: 1.1rem;
+    .logo { font-size: 1.6rem; font-weight: 700; color: #fff; }
+    .logo span { color: #45f3ff; }
+    .ai-badge {
+      background: rgba(255, 71, 87, 0.1); color: #ff4757;
+      padding: 6px 12px; border-radius: 20px; font-size: 0.8rem;
+      font-weight: 700; border: 1px solid rgba(255, 71, 87, 0.3);
+      display: flex; align-items: center; gap: 5px;
     }
 
-    /* SOL ÜST GELEN ÇAĞRI BİLDİRİMİ (POPUP) */
-    .incoming-call-toast {
-      position: fixed; top: 20px; left: -400px; width: 320px;
-      background: #1f2833; border-left: 5px solid #66fcf1;
-      padding: 15px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      z-index: 9999; display: flex; flex-direction: column; gap: 12px;
-      transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* AI UYARI TOAST (SOL ÜST) */
+    .ai-alert-toast {
+      position: fixed; top: 20px; left: -450px; width: 350px;
+      background: #1e1315; border-left: 5px solid #ff4757;
+      padding: 20px; border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      z-index: 99999; transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .incoming-call-toast.show { left: 20px; }
-    .caller-info { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 600; }
-    .toast-buttons { display: flex; gap: 10px; }
-    .btn-toast {
-      flex: 1; padding: 8px; border: none; border-radius: 6px;
-      font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
-    }
-    .btn-accept { background: #45f3ff; color: #000; }
-    .btn-decline { background: #ff4757; color: #fff; }
+    .ai-alert-toast.show { left: 20px; }
+    .ai-alert-title { color: #ff4757; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
 
-    /* ANA BAĞLANTI PANELİ */
-    .connect-panel {
-      width: 100%; max-width: 450px; background: #151a21;
-      padding: 25px; border-radius: 16px; border: 1px solid #1f2833;
-      text-align: center; margin-bottom: 25px; position: relative;
+    /* ODA BAĞLANTI PANELİ */
+    .room-panel {
+      width: 100%; max-width: 500px; background: #111620;
+      padding: 25px; border-radius: 16px; border: 1px solid #1c2333;
+      text-align: center; margin-bottom: 25px;
     }
-    .search-container { position: relative; width: 100%; margin-bottom: 15px; }
+    .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
     input {
-      width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #1f2833;
-      background: #0b0c10; color: #fff; font-size: 1rem; outline: none;
-      transition: 0.3s; text-align: center; letter-spacing: 1px;
+      flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #1c2333;
+      background: #08090c; color: #fff; font-size: 1rem; outline: none; transition: 0.3s;
     }
-    input:focus { border-color: #66fcf1; box-shadow: 0 0 10px rgba(102, 252, 241, 0.2); }
+    input:focus { border-color: #45f3ff; }
     
-    /* Otomatik Tamamlama Listesi */
-    .autocomplete-list {
-      position: absolute; top: 100%; left: 0; width: 100%;
-      background: #1f2833; border-radius: 8px; border: 1px solid #444;
-      max-height: 150px; overflow-y: auto; z-index: 10; display: none;
+    .btn-action {
+      flex: 1; padding: 14px; border: none; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .autocomplete-item {
-      padding: 12px; cursor: pointer; text-align: left; color: #fff;
-      border-bottom: 1px solid #151a21;
-    }
-    .autocomplete-item:hover { background: #66fcf1; color: #000; font-weight: bold; }
+    .btn-create { background: #1c2333; color: #45f3ff; border: 1px solid rgba(69, 243, 255, 0.2); }
+    .btn-join { background: #45f3ff; color: #08090c; }
+    .btn-create:hover, .btn-join:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
-    .btn-main {
-      width: 100%; padding: 14px; border: none; border-radius: 10px;
-      font-size: 1rem; font-weight: 700; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: 0.2s; background: #66fcf1; color: #0b0c10;
-    }
-    .btn-main:hover { background: #45f3ff; transform: translateY(-2px); }
-
-    /* VİDEO GRID */
+    /* DİNAMİK 25 KİŞİLİK VİDEO GRID */
     .video-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-      width: 100%; max-width: 1100px; margin-bottom: 25px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px; width: 100%; max-width: 1300px; margin-bottom: 25px;
     }
     .video-wrapper {
-      position: relative; background: #151a21; border-radius: 16px;
-      overflow: hidden; aspect-ratio: 16/10; border: 1px solid #1f2833;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      position: relative; background: #111620; border-radius: 14px;
+      overflow: hidden; aspect-ratio: 16/10; border: 1px solid #1c2333;
     }
     video { width: 100%; height: 100%; object-fit: cover; background: #000; }
     .mirror { transform: scaleX(-1); }
     .video-tag {
-      position: absolute; bottom: 15px; left: 15px;
-      background: rgba(11, 12, 16, 0.8); padding: 6px 14px;
-      border-radius: 8px; font-size: 0.85rem; font-weight: 600;
-      border: 1px solid rgba(255,255,255,0.1); color: #fff;
+      position: absolute; bottom: 10px; left: 10px;
+      background: rgba(8, 9, 12, 0.8); padding: 5px 12px;
+      border-radius: 6px; font-size: 0.8rem; color: #fff;
     }
 
-    /* ALT MEDYA KONTROLLERİ */
-    .media-controls { display: flex; gap: 20px; }
+    /* MEDYA KONTROLLERİ */
+    .controls { display: flex; gap: 15px; }
     .btn-circle {
       width: 55px; height: 55px; border-radius: 50%; border: none;
-      background: #1f2833; color: #fff; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: 0.2s; border: 1px solid rgba(255,255,255,0.1);
+      background: #111620; color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: 0.2s;
     }
-    .btn-circle:hover { background: #2c3540; color: #66fcf1; }
-    .btn-hangup-main { background: #ff4757 !important; }
-    .btn-hangup-main:hover { background: #ff6b81 !important; }
-    .muted-mode { background: #ff4757 !important; color: #fff !important; }
+    .btn-circle:hover { background: #1c2333; color: #45f3ff; }
+    .btn-hangup { background: #ff4757 !important; }
+    .muted { background: #ff4757 !important; }
   </style>
 </head>
 <body>
 
+  <div class="ai-alert-toast" id="ai-toast">
+    <div class="ai-alert-title">
+      <span class="material-icons">gavel</span> AI GÜVENLİK SİSTEMİ
+    </div>
+    <p style="margin-top: 10px; font-size: 0.9rem; color: #fbc4c4;" id="ai-toast-text">
+      Ses akışında kural dışı kelime/küfür algılandı! Arama güvenlik nedeniyle sonlandırılıyor.
+    </p>
+  </div>
+
   <div class="top-bar">
-    <div class="logo">krtl<span>Call</span></div>
-    <div class="my-id-container">
-      <span style="font-size: 0.9rem; color: #95a5a6;">Senin ID Kodun:</span>
-      <div class="id-badge" id="my-id">Sistem Başlatılıyor...</div>
+    <div class="logo">krtl<span>Call</span> <small style="font-size: 0.7rem; color: #45f3ff;">v2.0 PRO</small></div>
+    <div style="display: flex; gap: 15px; align-items: center;">
+      <div class="ai-badge"><span class="material-index" style="font-size: 14px;">psychology</span> AI CANLI MODERASYON AKTİF</div>
+      <div style="font-size: 0.9rem;">Senin Peer ID'n: <strong id="my-peer-id" style="color:#45f3ff;">---</strong></div>
     </div>
   </div>
 
-  <div class="incoming-call-toast" id="incoming-toast">
-    <div class="caller-info">
-      <span class="material-icons" style="color: #66fcf1;">phone_in_talk</span>
-      <span id="caller-id-text">Gelen Çağrı...</span>
+  <div class="room-panel">
+    <div class="input-group">
+      <input type="text" id="room-id-input" placeholder="Oda ID'si girin veya oluşturun..." maxlength="6">
     </div>
-    <div class="toast-buttons">
-      <button class="btn-toast btn-accept" id="accept-btn">
-        <span class="material-icons">call</span> Kabul Et
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-action btn-create" id="btn-create-room">
+        <span class="material-icons">add_box</span> Oda Kur
       </button>
-      <button class="btn-toast btn-decline" id="decline-btn">
-        <span class="material-icons">call_end</span> Reddet
+      <button class="btn-action btn-join" id="btn-join-room">
+        <span class="material-icons">group_add</span> Odaya Katıl (Max 25)
       </button>
     </div>
+    <div id="room-status" style="margin-top: 12px; font-size: 0.85rem; color: #45f3ff;"></div>
   </div>
 
-  <div class="connect-panel">
-    <div class="search-container">
-      <input type="text" id="target-id-input" placeholder="Bağlanılacak ID Yazın..." maxlength="5">
-      <div class="autocomplete-list" id="autocomplete-box"></div>
-    </div>
-    <button class="btn-main" id="connect-btn">
-      <span class="material-icons">bolt</span> ID'ye Doğrudan Bağlan
-    </button>
-  </div>
-
-  <div class="video-grid">
+  <div class="video-grid" id="grid-container">
     <div class="video-wrapper">
       <video id="localVideo" autoplay playsinline muted class="mirror"></video>
-      <div class="video-tag">Senin Kameran</div>
-    </div>
-    <div class="video-wrapper">
-      <video id="remoteVideo" autoplay playsinline></video>
-      <div class="video-tag" id="remote-tag">Karşı Taraf (Bekleniyor)</div>
+      <div class="video-tag">Sen (Modere Ediliyor)</div>
     </div>
   </div>
 
-  <div class="media-controls">
-    <button class="btn-circle" id="mic-toggle"><span class="material-icons">mic</span></button>
-    <button class="btn-circle" id="cam-toggle"><span class="material-icons">videocam</span></button>
-    <button class="btn-circle btn-hangup-main" id="hangup-btn"><span class="material-icons">call_end</span></button>
+  <div class="controls">
+    <button class="btn-circle" id="btn-mic"><span class="material-icons">mic</span></button>
+    <button class="btn-circle" id="btn-cam"><span class="material-icons">videocam</span></button>
+    <button class="btn-circle btn-hangup" id="btn-hangup"><span class="material-icons">call_end</span></button>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-    // Senin Paylaştığın Yapılandırma Verileri
     const firebaseConfig = {
       apiKey: "AIzaSyCPfjy0W_FFd0lm6IfS490QL6PU9AODSHY",
       authDomain: "krtlai.firebaseapp.com",
@@ -184,196 +154,215 @@
       measurementId: "G-CFEYN4P022"
     };
 
-    // Firebase ve Firestore Servislerini Başlatıyoruz
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     let localStream = null;
     let peer = null;
-    let currentCall = null;
-    let incomingCallRef = null;
-    let myGeneratedID = "";
-    let micMuted = false;
-    let camMuted = false;
+    let myPeerId = "";
+    let currentRoomId = null;
+    let connectedPeers = {}; // Bağlı olan kullanıcı çağrı listesi
+    let aiInterval = null;
 
-    // Elementlerin Seçimi
-    const myIdDisplay = document.getElementById('my-id');
-    const targetInput = document.getElementById('target-id-input');
-    const autocompleteBox = document.getElementById('autocomplete-box');
-    const connectBtn = document.getElementById('connect-btn');
-    const incomingToast = document.getElementById('incoming-toast');
-    const callerIdText = document.getElementById('caller-id-text');
+    // Kara Liste (Temsili Küfür Havuzu - Burayı genişletebilirsin kanka)
+    const badWords = ["küfür1", "küfür2", "salak", "aptal", "mal"]; 
+
+    const gridContainer = document.getElementById('grid-container');
     const localVideo = document.getElementById('localVideo');
-    const remoteVideo = document.getElementById('remoteVideo');
-    const remoteTag = document.getElementById('remote-tag');
+    const roomIdInput = document.getElementById('room-id-input');
+    const roomStatus = document.getElementById('room-status');
+    const aiToast = document.getElementById('ai-toast');
 
-    // 🎲 5 HANELİ RASTGELE ID GENERATOR
-    function generateShortID() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let result = '';
-      for (let i = 0; i < 5; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return result;
-    }
-
-    // 🚀 ANA MOTORU ÇALIŞTIR
-    async function initPlatform() {
+    // 🚀 1. DONANIMI VE PEERJS'İ BAŞLAT
+    async function init() {
       try {
-        // 1. Donanımı Aç
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localVideo.srcObject = localStream;
 
-        // 2. ID Üret ve PeerJS Başlat
-        myGeneratedID = generateShortID();
-        peer = new Peer(myGeneratedID);
-
-        peer.on('open', async (id) => {
-          myIdDisplay.textContent = id;
-          
-          // 🔥 CLOUD ADIMI: Üretilen 5 haneli ID'yi Firestore "online_users" koleksiyonuna kaydet
-          await setDoc(doc(db, "online_users", id), {
-            userId: id,
-            timestamp: Date.now()
-          });
-          console.log("ID Firestore Bulutuna Yazıldı:", id);
+        peer = new Peer();
+        peer.on('open', (id) => {
+          myPeerId = id;
+          document.getElementById('my-peer-id').textContent = id;
         });
 
-        // 🚨 3. BİRİ BİZİ ARADIĞINDA POPUP FIRLAT
+        // 📞 GELEN ÇOKLU ÇAĞRILARI KARŞILAMA
         peer.on('call', (call) => {
-          incomingCallRef = call;
-          callerIdText.textContent = `ID: ${call.peer} Arıyor...`;
-          incomingToast.classList.add('show');
+          call.answer(localStream);
+          call.on('stream', (remoteStream) => {
+            addRemoteVideo(call.peer, remoteStream);
+          });
+          connectedPeers[call.peer] = call;
         });
+
+        // 🔥 AI MODERASYON MOTORUNU ÇATEKLE
+        startAIModeration();
 
       } catch (err) {
-        console.error("Başlatma hatası:", err);
-        alert("Kamera/Mikrofon izni şart kanka!");
+        alert("Kamera/Mikrofon izni olmadan sisteme giriş yapılamaz kanka.");
       }
     }
 
-    // 🔍 CLOUD AUTOCOMPLETE (Firestore'dan Canlı Eşleşen ID'leri Çekme)
-    targetInput.addEventListener('input', async (e) => {
-      const val = e.target.value.toUpperCase();
-      targetInput.value = val;
-      autocompleteBox.innerHTML = '';
-      
-      // En az 2 karakter yazıldığında tetiklenir
-      if (val.length >= 2) {
-        try {
-          // Firestore'daki aktif kullanıcıları oku
-          const querySnapshot = await getDocs(collection(db, "online_users"));
-          let matches = [];
-          
-          querySnapshot.forEach((doc) => {
-            const activeId = doc.id;
-            // Kendi ID'mizi listede önermeyelim ve arama kriteri uysun
-            if (activeId.startsWith(val) && activeId !== myGeneratedID) {
-              matches.push(activeId);
+    // 🎙️ 2. YAPAY ZEKA SES DENETİMİ (Web Speech API)
+    function startAIModeration() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.log("Tarayıcında AI ses tanıma desteklenmiyor kanka.");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'tr-TR';
+
+      recognition.onresult = (event) => {
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          let text = event.results[i][0].transcript.toLowerCase();
+          console.log("AI Canlı Çözümleme: ", text);
+
+          // Her saniye gelen metin akışında küfür filtresi çalıştır
+          badWords.forEach(word => {
+            if (text.includes(word)) {
+              triggerAIShutdown(word);
             }
           });
-
-          if (matches.length > 0) {
-            autocompleteBox.style.display = 'block';
-            matches.forEach(match => {
-              const item = document.createElement('div');
-              item.className = 'autocomplete-item';
-              item.textContent = match;
-              item.onclick = () => {
-                targetInput.value = match;
-                autocompleteBox.style.display = 'none';
-              };
-              autocompleteBox.appendChild(item);
-            });
-          } else {
-            autocompleteBox.style.display = 'none';
-          }
-        } catch (error) {
-          console.error("Firestore'dan veri çekilemedi:", error);
         }
+      };
+
+      recognition.onerror = () => { recognition.start(); };
+      recognition.onend = () => { recognition.start(); };
+      recognition.start();
+    }
+
+    // 🛑 3. AI ÇAĞRIYI SAKATLAYIP KAPATMA MOTORU
+    function triggerAIShutdown(detectedWord) {
+      document.getElementById('ai-toast-text').innerHTML = `Ses akışında kural dışı kelime (<strong>${detectedWord}</strong>) algılandı! Görüşme AI tarafından sonlandırıldı.`;
+      aiToast.classList.add('show');
+      
+      setTimeout(() => {
+        aiToast.classList.remove('show');
+        hangUp();
+      }, 4000);
+    }
+
+    // 🏢 4. ODA KURMA MANTIĞI (Firestore)
+    document.getElementById('btn-create-room').addEventListener('click', async () => {
+      const roomId = Math.floor(100000 + Math.random() * 900000).toString(); // 6 Haneli oda kodu
+      roomIdInput.value = roomId;
+      currentRoomId = roomId;
+
+      await setDoc(doc(db, "rooms", roomId), {
+        users: [myPeerId],
+        createdAt: Date.now()
+      });
+
+      roomStatus.textContent = `Oda başarıyla kuruldu! ID'yi arkadaşlarına dağıt.`;
+      listenRoomChanges(roomId);
+    });
+
+    // 🤝 5. ODAYA KATILMA MANTIĞI (Max 25 Kişi Kontrolü)
+    document.getElementById('btn-join-room').addEventListener('click', async () => {
+      const roomId = roomIdInput.value.trim();
+      if (!roomId) return alert("Lütfen geçerli bir Oda ID'si gir kanka!");
+
+      const roomRef = doc(db, "rooms", roomId);
+      const roomSnap = await getDoc(roomRef);
+
+      if (roomSnap.exists()) {
+        const currentUsers = roomSnap.data().users || [];
+        
+        // CRITICAL CHECK: Max 25 Kişi Kontrolü
+        if (currentUsers.length >= 25) {
+          return alert("Oda maksimum kapasiteye (25 kişi) ulaştı kanka! İçeri giremezsin.");
+        }
+
+        currentRoomId = roomId;
+        await updateDoc(roomRef, {
+          users: arrayUnion(myPeerId)
+        });
+
+        // Odadaki diğer herkesi sırayla ara (Mesh Network)
+        currentUsers.forEach(userId => {
+          if (userId !== myPeerId) {
+            const call = peer.call(userId, localStream);
+            call.on('stream', (remoteStream) => {
+              addRemoteVideo(userId, remoteStream);
+            });
+            connectedPeers[userId] = call;
+          }
+        });
+
+        listenRoomChanges(roomId);
       } else {
-        autocompleteBox.style.display = 'none';
+        alert("Böyle bir oda bulunamadı kanka.");
       }
     });
 
-    // 📞 DIŞARIYI ARAMA BUTONU
-    connectBtn.addEventListener('click', () => {
-      const targetID = targetInput.value.trim();
-      if (targetID.length !== 5) return alert("5 haneli ID şart kanka!");
-
-      remoteTag.textContent = `Aranıyor: ${targetID}...`;
-      
-      const call = peer.call(targetID, localStream);
-      currentCall = call;
-
-      call.on('stream', (remoteStream) => {
-        remoteVideo.srcObject = remoteStream;
-        remoteTag.textContent = `Canlı Görüşme: ${targetID}`;
+    // 🔄 6. ODA DEĞİŞİKLİKLERİNİ CANLI DİNLEME (Firestore Realtime)
+    function listenRoomChanges(roomId) {
+      onSnapshot(doc(db, "rooms", roomId), (doc) => {
+        if (!doc.exists()) return;
+        const data = doc.data();
+        roomStatus.textContent = `Odadaki Toplam Kişi: ${data.users.length} / 25`;
       });
-    });
+    }
 
-    // ✔️ GELEN ÇAĞRIYI ONAYLA (Sol Üst)
-    document.getElementById('accept-btn').addEventListener('click', () => {
-      if (incomingCallRef) {
-        incomingToast.classList.remove('show');
-        incomingCallRef.answer(localStream);
-        currentCall = incomingCallRef;
+    // 📹 DİNAMİK VİDEO EKLEME
+    function addRemoteVideo(userId, stream) {
+      if (document.getElementById(`wrap-${userId}`)) return;
 
-        currentCall.on('stream', (remoteStream) => {
-          remoteVideo.srcObject = remoteStream;
-          remoteTag.textContent = `Canlı Görüşme: ${currentCall.peer}`;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'video-wrapper';
+      wrapper.id = `wrap-${userId}`;
+
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.autoplay = true;
+      video.playsInline = true;
+
+      const tag = document.createElement('div');
+      tag.className = 'video-tag';
+      tag.textContent = `Kullanıcı: ${userId.substring(0, 5)}`;
+
+      wrapper.appendChild(video);
+      wrapper.appendChild(tag);
+      gridContainer.appendChild(wrapper);
+    }
+
+    // 🛑 BAĞLANTIYI KOPARMA
+    function hangUp() {
+      Object.keys(connectedPeers).forEach(userId => {
+        if (connectedPeers[userId]) connectedPeers[userId].close();
+        const el = document.getElementById(`wrap-${userId}`);
+        if (el) el.remove();
+      });
+      connectedPeers = {};
+
+      if (currentRoomId) {
+        updateDoc(doc(db, "rooms", currentRoomId), {
+          users: arrayRemove(myPeerId)
         });
       }
+      roomStatus.textContent = "Görüşmeden ayrılındı.";
+    }
+
+    document.getElementById('btn-hangup').addEventListener('click', hangUp);
+
+    // MİKROFON & KAMERA BUTONLARI
+    document.getElementById('btn-mic').addEventListener('click', () => {
+      const enabled = localStream.getAudioTracks()[0].enabled;
+      localStream.getAudioTracks()[0].enabled = !enabled;
+      document.getElementById('btn-mic').classList.toggle('muted', enabled);
     });
 
-    // ❌ GELEN ÇAĞRIYI REDDET
-    document.getElementById('decline-btn').addEventListener('click', () => {
-      incomingToast.classList.remove('show');
-      if (incomingCallRef) {
-        incomingCallRef.close();
-        incomingCallRef = null;
-      }
+    document.getElementById('btn-cam').addEventListener('click', () => {
+      const enabled = localStream.getVideoTracks()[0].enabled;
+      localStream.getVideoTracks()[0].enabled = !enabled;
+      document.getElementById('btn-cam').classList.toggle('muted', enabled);
     });
 
-    // 🎙️ MİKROFON KONTROLÜ
-    document.getElementById('mic-toggle').addEventListener('click', () => {
-      micMuted = !micMuted;
-      localStream.getAudioTracks()[0].enabled = !micMuted;
-      document.getElementById('mic-toggle').classList.toggle('muted-mode', micMuted);
-      document.getElementById('mic-toggle').querySelector('.material-icons').textContent = micMuted ? 'mic_off' : 'mic';
-    });
-
-    // 📹 KAMERA KONTROLÜ
-    document.getElementById('cam-toggle').addEventListener('click', () => {
-      camMuted = !camMuted;
-      localStream.getVideoTracks()[0].enabled = !camMuted;
-      document.getElementById('cam-toggle').classList.toggle('muted-mode', camMuted);
-      document.getElementById('cam-toggle').querySelector('.material-icons').textContent = camMuted ? 'videocam_off' : 'videocam';
-    });
-
-    // 🛑 GÖRÜŞMEYİ KAPAT
-    document.getElementById('hangup-btn').addEventListener('click', () => {
-      if (currentCall) {
-        currentCall.close();
-        currentCall = null;
-      }
-      remoteVideo.srcObject = null;
-      remoteTag.textContent = "Görüşme Sonlandırıldı.";
-    });
-
-    // 🧹 ÇIKIŞ KONTROLÜ: Kullanıcı sekmeyi veya siteyi kapattığında Firestore'daki ID'sini otomatik siler!
-    window.addEventListener('beforeunload', async () => {
-      if (myGeneratedID) {
-        await deleteDoc(doc(db, "online_users", myGeneratedID));
-      }
-    });
-
-    document.addEventListener('click', (e) => {
-      if (e.target !== targetInput) autocompleteBox.style.display = 'none';
-    });
-
-    // Tetikleyiciyi ateşle
-    initPlatform();
+    // Motoru çalıştır kanka
+    window.onload = init;
   </script>
 </body>
 </html>
